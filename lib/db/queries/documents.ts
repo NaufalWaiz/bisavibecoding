@@ -164,3 +164,13 @@ export async function listDocumentVersions(
     .where(eq(documentVersions.documentId, documentId))
     .orderBy(desc(documentVersions.version));
 }
+
+/** Hitung jumlah dokumen PRD yang pernah dibuat user di database (untuk kuota berlangganan). */
+export async function countUserPrdDocuments(userId: string): Promise<number> {
+  const rows = await db
+    .select({ id: documents.id })
+    .from(documents)
+    .innerJoin(projects, eq(projects.id, documents.projectId))
+    .where(and(eq(projects.userId, userId), eq(documents.type, "prd")));
+  return rows.length;
+}

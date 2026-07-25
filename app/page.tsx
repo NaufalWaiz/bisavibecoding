@@ -6,23 +6,22 @@ import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-pr
 import { WikoDashboardMock } from "@/components/landing/wiko-dashboard-mock";
 import { TechMarquee } from "@/components/landing/marquee";
 import { WikoFaq } from "@/components/landing/wiko-faq";
+import { SectionDivider } from "@/components/landing/section-divider";
+import { PricingCards } from "@/components/landing/pricing-cards";
 import {
   ArrowUpRight,
   Code2,
   FileCode,
   Sparkles,
-  Star,
   Zap,
   Lock,
   MessageSquare,
   ShieldCheck,
-  Terminal,
+  Tag,
   CheckCircle2,
-  Check,
-  Copy,
-  TrendingUp,
   Cpu,
   Layers,
+  HelpCircle,
 } from "lucide-react";
 
 export const metadata = {
@@ -50,6 +49,9 @@ export default function LandingPage() {
             </a>
             <a href="#fitur" className="transition-warm hover:text-foreground">
               Fitur Utama
+            </a>
+            <a href="#pricing" className="transition-warm hover:text-foreground">
+              Harga & Paket
             </a>
             <a href="#faq" className="transition-warm hover:text-foreground">
               FAQ
@@ -123,13 +125,15 @@ export default function LandingPage() {
       </section>
 
       {/* Infinite Scrolling Tech Stack Marquee Bar */}
-      <Reveal delay={1} className="my-4">
+      <Reveal delay={1}>
         <TechMarquee />
       </Reveal>
 
       {/* Workspace Pipeline Section */}
-      <section id="pipeline" className="border-t border-border/60 bg-surface/40 py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-6">
+      <section id="pipeline" className="relative py-20 sm:py-28">
+        <SectionDivider label="PRD WORKFLOW ENGINE" icon={Layers} />
+        
+        <div className="mx-auto max-w-6xl px-6 mt-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <span className="text-tiny font-bold uppercase tracking-wider text-brand-stronger">
               4-Step Workflow Engine
@@ -149,8 +153,10 @@ export default function LandingPage() {
       </section>
 
       {/* Enterprise Features Grid Section */}
-      <section id="fitur" className="border-t border-border/60 py-20 sm:py-28">
-        <div className="mx-auto max-w-6xl px-6">
+      <section id="fitur" className="relative py-20 sm:py-28 bg-surface/30">
+        <SectionDivider label="FITUR ENTERPRISE" icon={ShieldCheck} />
+
+        <div className="mx-auto max-w-6xl px-6 mt-6">
           <Reveal className="mx-auto max-w-2xl text-center">
             <span className="text-tiny font-bold uppercase tracking-wider text-brand-stronger">
               Fitur Enterprise Vibe Coding
@@ -264,80 +270,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials & Big Stats Section */}
-      <section className="border-t border-border/60 bg-surface/50 py-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
-            <Reveal delay={1}>
-              <div className="rounded-3xl border border-border/80 bg-card p-8 shadow-warm-xs sm:p-10 transition-all duration-300 hover:shadow-warm-md hover:border-brand-soft-border">
-                <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-tiny font-bold uppercase tracking-wider text-brand-stronger">
-                    <Star className="size-4 fill-amber text-amber" />
-                    Pengalaman Developer Real
-                  </span>
-                  <span className="rounded-full border border-sage-soft-border bg-sage-soft px-3 py-0.5 text-tiny font-semibold text-sage-text">
-                    ✓ Terverifikasi
-                  </span>
-                </div>
+      {/* Pricing & Plans Section */}
+      <section id="pricing" className="relative py-24 sm:py-32 bg-surface/50 overflow-hidden">
+        <SectionDivider label="HARGA & PAKET" icon={Tag} />
 
-                <blockquote className="mt-6 font-heading text-h2 font-normal leading-relaxed text-foreground">
-                  &quot;Sebelum memakai bisavibecoding, saya menghabiskan 50% waktu memperbaiki halusinasi
-                  Claude Code karena PRD yang terlalu luas. Sekarang, 1 task = 1 prompt sekali jalan
-                  selesai!&quot;
-                </blockquote>
+        {/* Ambient Glow Ribbons in background */}
+        <div className="pointer-events-none absolute -left-40 top-1/2 -translate-y-1/2 size-96 rounded-full bg-brand-soft/40 blur-3xl" />
+        <div className="pointer-events-none absolute -right-40 top-1/2 -translate-y-1/2 size-96 rounded-full bg-sage-soft/40 blur-3xl" />
 
-                <div className="mt-8 flex items-center gap-3 border-t border-border/60 pt-6">
-                  <div className="flex size-11 items-center justify-center rounded-2xl bg-brand-soft font-bold text-brand-stronger text-body shadow-warm-xs">
-                    R
-                  </div>
-                  <div>
-                    <div className="text-small font-semibold text-foreground">Rian Ardianto</div>
-                    <div className="text-tiny text-muted-foreground">Fullstack Vibe Coder @ DevStudio</div>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
+        <div className="mx-auto max-w-6xl px-6 mt-6 relative z-10">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <span className="text-tiny font-bold uppercase tracking-wider text-brand-stronger">
+              Paket Berlangganan Hemat
+            </span>
+            <h2 className="mt-2 font-heading text-h1 text-foreground">
+              Pilih Paket Sesuai Kebutuhan Build-mu
+            </h2>
+            <p className="mt-3 text-body text-muted-foreground">
+              Tanpa biaya tersembunyi. Dapatkan akses penuh ke AI Architect Engine untuk menghasilkan PRD dan task prompt presisi.
+            </p>
+          </Reveal>
 
-            <Reveal delay={2}>
-              <div className="grid gap-5 sm:grid-cols-3">
-                <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-warm-xs transition-all duration-300 hover:shadow-warm-sm hover:-translate-y-1">
-                  <div className="font-heading text-[2.75rem] font-bold text-sage-text">94%+</div>
-                  <div className="mt-2 text-tiny font-semibold text-foreground">
-                    Keberhasilan Task
-                  </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Prompt sekali jalan tanpa revisi
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-warm-xs transition-all duration-300 hover:shadow-warm-sm hover:-translate-y-1">
-                  <div className="font-heading text-[2.75rem] font-bold text-brand-strong">0%</div>
-                  <div className="mt-2 text-tiny font-semibold text-foreground">
-                    Spec Hallucination
-                  </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Tebak-tebakan entitas nol
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-warm-xs transition-all duration-300 hover:shadow-warm-sm hover:-translate-y-1">
-                  <div className="font-heading text-[2.75rem] font-bold text-foreground">4 Step</div>
-                  <div className="mt-2 text-tiny font-semibold text-foreground">
-                    Pipeline Engine
-                  </div>
-                  <p className="mt-1 text-[11px] text-muted-foreground">
-                    Dari ide mentah ke prompt
-                  </p>
-                </div>
-              </div>
-            </Reveal>
-          </div>
+          <Reveal delay={1} className="mt-14">
+            <PricingCards />
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 sm:py-28">
-        <div className="mx-auto max-w-4xl px-6">
+      <section id="faq" className="relative py-20 sm:py-28">
+        <SectionDivider label="PERTANYAAN UMUM" icon={HelpCircle} />
+
+        <div className="mx-auto max-w-4xl px-6 mt-6">
           <Reveal className="text-center">
             <span className="text-tiny font-bold uppercase tracking-wider text-brand-stronger">
               Jawaban Pertanyaan Umum

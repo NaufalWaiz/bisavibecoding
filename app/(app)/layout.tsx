@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/brand/logo";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { logout } from "../(auth)/actions";
-import { Activity, LogOut } from "lucide-react";
+import { Activity, CreditCard, LogOut } from "lucide-react";
 
 export default async function AppLayout({
   children,
@@ -44,6 +44,15 @@ export default async function AppLayout({
           </div>
 
           <div className="flex items-center gap-3">
+            {/* Subscription Link */}
+            <Link
+              href="/subscription"
+              className="inline-flex items-center gap-1.5 rounded-full border border-brand-soft-border bg-brand-soft/80 px-3 py-1 text-tiny font-bold text-brand-stronger shadow-warm-xs transition-warm hover:bg-brand-soft hover:shadow-warm-sm hover:scale-105"
+            >
+              <CreditCard className="size-3.5 text-brand-strong" />
+              <span>Berlangganan</span>
+            </Link>
+
             {/* User Profile Pill */}
             <div className="flex items-center gap-2.5 rounded-full border border-border/90 bg-card px-2.5 py-1 text-tiny text-foreground shadow-warm-xs transition-warm hover:border-brand-strong/30 hover:shadow-warm-sm">
               <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft border border-brand-soft-border font-mono text-[11px] font-bold text-brand-stronger leading-none shadow-warm-xs">
