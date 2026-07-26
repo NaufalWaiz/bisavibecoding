@@ -188,7 +188,7 @@ export function TaskCard({
           <div className="flex flex-wrap items-center gap-2">
             <Select
               value={status}
-              onValueChange={(value) => changeStatus(value as TaskStatus)}
+              onValueChange={(value: string) => changeStatus(value as TaskStatus)}
               disabled={isPending}
             >
               <SelectTrigger
