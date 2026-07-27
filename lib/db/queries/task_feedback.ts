@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   projects,
@@ -102,6 +102,58 @@ export async function getFeedbackSummary(
     failed,
     successRate: rated === 0 ? null : Math.round((success / rated) * 100),
   };
+}
+
+/**
+ * Ringkasan feedback untuk BANYAK project sekaligus (dipakai halaman daftar
+ * project). Satu query untuk semua project, bukan satu per kartu.
+ */
+export async function getFeedbackSummariesForProjects(
+  projectIds: string[],
+  userId: string,
+): Promise<Map<string, FeedbackSummary>> {
+  const summaries = new Map<string, FeedbackSummary>();
+  if (projectIds.length === 0) return summaries;
+
+  const rows = await db
+    .select({
+      projectId: tasks.projectId,
+      taskId: taskFeedback.taskId,
+      outcome: taskFeedback.outcome,
+      createdAt: taskFeedback.createdAt,
+    })
+    .from(taskFeedback)
+    .innerJoin(tasks, eq(tasks.id, taskFeedback.taskId))
+    .innerJoin(projects, eq(projects.id, tasks.projectId))
+    .where(and(inArray(tasks.projectId, projectIds), eq(projects.userId, userId)))
+    .orderBy(desc(taskFeedback.createdAt));
+
+  // Penilaian TERAKHIR per task, konsisten dengan getLatestFeedbackByTask.
+  const seenTasks = new Set<string>();
+  const tally = new Map<string, { success: number; failed: number }>();
+
+  for (const row of rows) {
+    if (seenTasks.has(row.taskId)) continue;
+    seenTasks.add(row.taskId);
+
+    const current = tally.get(row.projectId) ?? { success: 0, failed: 0 };
+    if (row.outcome === "success") current.success += 1;
+    else current.failed += 1;
+    tally.set(row.projectId, current);
+  }
+
+  for (const projectId of projectIds) {
+    const { success, failed } = tally.get(projectId) ?? { success: 0, failed: 0 };
+    const rated = success + failed;
+    summaries.set(projectId, {
+      rated,
+      success,
+      failed,
+      successRate: rated === 0 ? null : Math.round((success / rated) * 100),
+    });
+  }
+
+  return summaries;
 }
 
 export async function listTaskFeedback(

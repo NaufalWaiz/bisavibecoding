@@ -15,10 +15,13 @@ export function TasksListClient({
   tasks,
   projectId,
   feedbackByTaskMap,
+  unknownEntitiesByTask,
 }: {
   tasks: Task[];
   projectId: string;
   feedbackByTaskMap: Record<string, "success" | "failed" | null>;
+  /** Entity yang disebut task tapi tidak ada di PRD terkini (T3.3). */
+  unknownEntitiesByTask: Record<string, string[]>;
 }) {
   const [filter, setFilter] = useState<FilterStatus>("all");
   const [search, setSearch] = useState("");
@@ -160,6 +163,7 @@ export function TasksListClient({
                 index={index}
                 projectId={projectId}
                 feedbackOutcome={feedbackByTaskMap[task.id] ?? null}
+                unknownEntities={unknownEntitiesByTask[task.id] ?? []}
               />
             </Reveal>
           ))}

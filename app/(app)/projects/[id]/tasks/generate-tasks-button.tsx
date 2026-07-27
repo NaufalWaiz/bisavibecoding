@@ -39,15 +39,23 @@ export function GenerateTasksButton({
         error?: string;
         count?: number;
         regenerated?: number;
+        remainingStale?: number;
       };
 
       if (!response.ok) throw new Error(data.error ?? "Generasi task gagal.");
 
-      toast.success(
-        mode === "stale"
-          ? `${data.regenerated ?? 0} task stale diperbarui.`
-          : `${data.count ?? 0} task dihasilkan.`,
-      );
+      if (mode === "all") {
+        toast.success(`${data.count ?? 0} task dihasilkan.`);
+      } else if (data.remainingStale && data.remainingStale > 0) {
+        // Jangan bilang "berhasil" kalau masih ada yang tertinggal.
+        toast.warning(
+          `${data.regenerated ?? 0} task diperbarui, tapi ${data.remainingStale} masih stale. Coba jalankan sekali lagi.`,
+        );
+      } else {
+        toast.success(
+          `${data.regenerated ?? 0} task stale diperbarui — task lain tidak tersentuh.`,
+        );
+      }
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Generasi task gagal.");

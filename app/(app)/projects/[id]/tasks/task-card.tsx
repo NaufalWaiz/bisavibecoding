@@ -24,7 +24,10 @@ import { Notice } from "@/components/app/notice";
 import { cn } from "@/lib/utils";
 import type { Task, TaskStatus } from "@/lib/db/schema";
 import { updateTaskStatusAction } from "./actions";
-import { TaskFeedbackForm } from "./task-feedback-form";
+import {
+  TaskFeedbackForm,
+  TaskFeedbackQuickActions,
+} from "./task-feedback-form";
 
 const STATUS_LABEL: Record<TaskStatus, string> = {
   todo: "Todo",
@@ -45,11 +48,14 @@ export function TaskCard({
   index,
   projectId,
   feedbackOutcome,
+  unknownEntities,
 }: {
   task: Task;
   index: number;
   projectId: string;
   feedbackOutcome: "success" | "failed" | null;
+  /** Entity yang disebut task ini tapi tidak ada di PRD terkini (T3.3). */
+  unknownEntities: string[];
 }) {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<TaskStatus>(task.status);
@@ -100,7 +106,13 @@ export function TaskCard({
     });
   }
 
-  const warnings = task.consistencyWarnings ?? [];
+  /*
+   * Peringatan konsistensi ditampilkan dari `unknownEntities` yang dihitung
+   * ulang terhadap PRD terkini, bukan dari `task.consistencyWarnings` yang
+   * dibekukan saat generate — kolom itu tetap tersimpan sebagai jejak, tapi
+   * memakainya untuk tampilan berarti peringatan bertahan walau PRD-nya sudah
+   * diperbaiki.
+   */
   const criteriaCount = task.acceptanceCriteria.length;
 
   return (
@@ -149,19 +161,26 @@ export function TaskCard({
                 </Badge>
               ) : null}
 
-              {warnings.length > 0 ? (
-                <Badge variant="secondary" title={warnings.join("\n")}>
-                  {warnings.length} catatan konsistensi
+              {/* Sebut entity-nya. "2 catatan konsistensi" tidak memberi tahu
+                  apa pun yang bisa ditindaklanjuti tanpa membuka detail. */}
+              {unknownEntities.length > 0 ? (
+                <Badge
+                  variant="warning"
+                  title={`Tidak ada di bagian "Entity & data" PRD: ${unknownEntities.join(", ")}`}
+                  className="gap-1"
+                >
+                  <AlertTriangle />
+                  {unknownEntities.slice(0, 2).join(", ")}
+                  {unknownEntities.length > 2
+                    ? ` +${unknownEntities.length - 2}`
+                    : ""}{" "}
+                  di luar PRD
                 </Badge>
               ) : null}
 
-              {feedbackOutcome ? (
-                <Badge
-                  variant={feedbackOutcome === "success" ? "success" : "destructive"}
-                >
-                  {feedbackOutcome === "success" ? "sekali jalan" : "perlu revisi"}
-                </Badge>
-              ) : null}
+              {/* Hasil penilaian tidak diberi badge tersendiri: tombol satu
+                  klik di baris aksi bawah sudah menampilkan status aktifnya,
+                  dan dua penanda untuk satu keadaan hanya jadi derau. */}
             </div>
 
             <p className="mt-1.5 line-clamp-2 text-small leading-relaxed text-muted-foreground">
@@ -219,6 +238,14 @@ export function TaskCard({
               copiedLabel="Prompt tersalin"
               toastMessage="Prompt disalin — siap ditempel ke AI agent."
             />
+
+            {/* Metrik utama produk dikumpulkan di sini: satu klik, tanpa
+                membuka detail lebih dulu. */}
+            <TaskFeedbackQuickActions
+              projectId={projectId}
+              taskId={task.id}
+              currentOutcome={feedbackOutcome}
+            />
           </div>
 
           <Button
@@ -246,11 +273,18 @@ export function TaskCard({
             </Notice>
           ) : null}
 
-          {warnings.length > 0 ? (
-            <Notice tone="warning" title="Catatan konsistensi (tidak memblokir)">
+          {unknownEntities.length > 0 ? (
+            <Notice
+              tone="warning"
+              title="Entity di luar PRD (tidak memblokir)"
+            >
               <ul className="mt-1.5 list-disc space-y-1 pl-4">
-                {warnings.map((warning, i) => (
-                  <li key={i}>{warning}</li>
+                {unknownEntities.map((entity) => (
+                  <li key={entity}>
+                    <code className="font-mono text-[11px]">{entity}</code> disebut
+                    task ini tapi tidak ada di bagian &ldquo;Entity &amp; data&rdquo;
+                    PRD. Cek apakah PRD-nya kurang lengkap, atau task-nya melenceng.
+                  </li>
                 ))}
               </ul>
             </Notice>

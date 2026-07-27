@@ -62,18 +62,40 @@ export type ConsistencyReport = {
 };
 
 /**
- * Periksa satu task terhadap daftar entity PRD.
+ * Entity yang disebut sebuah task tapi tidak ada di PRD.
  *
+ * Dipisah dari `checkTaskConsistency` supaya UI bisa menghitungnya ulang dari
+ * PRD yang berlaku SEKARANG, bukan hanya membaca peringatan yang dibekukan saat
+ * generate: kalau user menambahkan entity yang kurang ke PRD, peringatannya
+ * harus hilang tanpa perlu regenerate task.
+ */
+export function findUnknownEntities(
+  taskEntities: string[],
+  prdContent: string,
+): string[] {
+  const prdEntities = extractPrdEntities(prdContent);
+  // PRD tanpa daftar entity sama sekali: jangan banjiri user dengan peringatan.
+  if (prdEntities.length === 0) return [];
+  return filterUnknown(taskEntities, prdEntities);
+}
+
+/**
  * Perbandingan longgar (case/plural/underscore diabaikan) supaya peringatan
  * yang muncul benar-benar berarti, bukan derau ejaan.
  */
+function filterUnknown(taskEntities: string[], prdEntities: string[]): string[] {
+  const known = new Set(prdEntities.map(singular));
+  return taskEntities.filter((entity) => !known.has(singular(entity)));
+}
+
+/** Periksa satu task terhadap daftar entity PRD. */
 export function checkTaskConsistency(
   task: Pick<TaskOutput, "title" | "context_slice">,
   prdEntities: string[],
 ): ConsistencyReport {
-  const known = new Set(prdEntities.map(singular));
-  const unknownEntities = task.context_slice.entities.filter(
-    (entity) => !known.has(singular(entity)),
+  const unknownEntities = filterUnknown(
+    task.context_slice.entities,
+    prdEntities,
   );
 
   const warnings = unknownEntities.map(
