@@ -83,6 +83,39 @@ export function formatIssues(error: z.ZodError): string[] {
   );
 }
 
+export type ParseTaskListOptions = {
+  /**
+   * Jumlah task yang WAJIB dikembalikan. Dipakai saat regenerate selektif
+   * (T3.2): hasilnya dipasangkan satu-satu dengan task stale menurut urutan,
+   * jadi jumlah yang meleset berarti ada task stale yang tidak kebagian
+   * pengganti — dan task itu akan tetap stale setelah operasi yang mengaku
+   * berhasil. Diperlakukan sebagai kegagalan validasi supaya kena retry.
+   */
+  expectedCount?: number;
+};
+
+type Attempt =
+  | { ok: true; data: TaskListOutput }
+  | { ok: false; issues: string[] };
+
+function validate(raw: unknown, options: ParseTaskListOptions): Attempt {
+  const parsed = taskListSchema.safeParse(raw);
+  if (!parsed.success) return { ok: false, issues: formatIssues(parsed.error) };
+
+  const { expectedCount } = options;
+  if (expectedCount !== undefined && parsed.data.tasks.length !== expectedCount) {
+    return {
+      ok: false,
+      issues: [
+        `tasks: harus berisi TEPAT ${expectedCount} task, bukan ${parsed.data.tasks.length}. ` +
+          `Kembalikan satu task pengganti untuk tiap task yang diminta, dengan urutan yang sama persis.`,
+      ],
+    };
+  }
+
+  return { ok: true, data: parsed.data };
+}
+
 /**
  * Parse + validasi output task, dengan SATU kali retry.
  *
@@ -93,20 +126,21 @@ export function formatIssues(error: z.ZodError): string[] {
  */
 export async function parseTaskListWithRetry(
   produce: (feedback: string | null) => Promise<unknown>,
+  options: ParseTaskListOptions = {},
 ): Promise<TaskListOutput> {
-  const first = taskListSchema.safeParse(await produce(null));
-  if (first.success) return first.data;
+  const first = validate(await produce(null), options);
+  if (first.ok) return first.data;
 
-  const issues = formatIssues(first.error);
-  const second = taskListSchema.safeParse(
+  const second = validate(
     await produce(
-      `Output sebelumnya tidak lolos validasi:\n- ${issues.join("\n- ")}\nPerbaiki dan kembalikan JSON yang sesuai schema.`,
+      `Output sebelumnya tidak lolos validasi:\n- ${first.issues.join("\n- ")}\nPerbaiki dan kembalikan JSON yang sesuai schema.`,
     ),
+    options,
   );
-  if (second.success) return second.data;
+  if (second.ok) return second.data;
 
   throw new TaskValidationError(
     "Output task tidak lolos validasi setelah 2 percobaan.",
-    formatIssues(second.error),
+    second.issues,
   );
 }
