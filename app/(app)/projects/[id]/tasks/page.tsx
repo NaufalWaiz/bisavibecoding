@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/supabase/server";
 import { getProject } from "@/lib/db/queries/projects";
 import { getDocumentByType } from "@/lib/db/queries/documents";
 import { listTasks } from "@/lib/db/queries/tasks";
+import { findUnknownEntities } from "@/lib/ai/consistency";
 import {
   getFeedbackSummary,
   getLatestFeedbackByTask,
@@ -14,7 +15,7 @@ import { EmptyState } from "@/components/app/empty-state";
 import { Notice } from "@/components/app/notice";
 import { GenerateTasksButton } from "./generate-tasks-button";
 import { TasksListClient } from "./tasks-list-client";
-import { ListChecks, Target, Lock } from "lucide-react";
+import { ListChecks, Target, Lock, FileText } from "lucide-react";
 
 export default async function TasksPage({
   params,
@@ -49,6 +50,22 @@ export default async function TasksPage({
   for (const task of tasks) {
     feedbackByTaskMap[task.id] = feedbackByTask.get(task.id) ?? null;
   }
+
+  /*
+   * Konsistensi (T3.3) dihitung ulang terhadap PRD yang berlaku sekarang, bukan
+   * dibaca dari `consistency_warnings` yang dibekukan saat generate. Efeknya:
+   * begitu user melengkapi PRD, peringatannya hilang sendiri — tanpa harus
+   * regenerate task hanya untuk membungkam sebuah label.
+   */
+  const unknownEntitiesByTask: Record<string, string[]> = {};
+  for (const task of tasks) {
+    unknownEntitiesByTask[task.id] = prd?.content
+      ? findUnknownEntities(task.contextSlice?.entities ?? [], prd.content)
+      : [];
+  }
+  const offPrdEntities = [
+    ...new Set(Object.values(unknownEntitiesByTask).flat()),
+  ];
 
   return (
     <section className="flex flex-col gap-5">
@@ -116,6 +133,37 @@ export default async function TasksPage({
         </Notice>
       ) : null}
 
+      {offPrdEntities.length > 0 ? (
+        <Notice
+          tone="warning"
+          title={`${offPrdEntities.length} entity disebut task tapi tidak ada di PRD`}
+          action={
+            <Link
+              href={`/projects/${project.id}/prd`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-soft-border bg-card px-3 py-1.5 text-tiny font-semibold text-amber-text shadow-warm-xs transition-warm hover:bg-amber-soft"
+            >
+              <FileText className="size-3.5" />
+              Lengkapi PRD
+            </Link>
+          }
+        >
+          <span className="flex flex-wrap items-center gap-1.5">
+            {offPrdEntities.map((entity) => (
+              <code
+                key={entity}
+                className="rounded-md border border-amber-soft-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-amber-text"
+              >
+                {entity}
+              </code>
+            ))}
+          </span>
+          <span className="mt-2 block">
+            Ini hanya sinyal, bukan penghalang — task tetap bisa dipakai. Entah
+            PRD-nya yang kurang lengkap, atau task-nya yang mengarang entity.
+          </span>
+        </Notice>
+      ) : null}
+
       {tasks.length === 0 ? (
         <EmptyState
           icon={ListChecks}
@@ -139,6 +187,7 @@ export default async function TasksPage({
           tasks={tasks}
           projectId={project.id}
           feedbackByTaskMap={feedbackByTaskMap}
+          unknownEntitiesByTask={unknownEntitiesByTask}
         />
       )}
     </section>

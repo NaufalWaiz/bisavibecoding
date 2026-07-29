@@ -105,7 +105,7 @@ export async function POST(request: Request) {
       });
       usage = generated.usage;
       return generated.data;
-    });
+    }, mode === "stale" ? { expectedCount: staleTasks.length } : {});
 
     // Konsistensi checker (T3.3) — non-blocking, hasilnya disimpan per task.
     const reports = checkTaskListConsistency(result.tasks, prd.content);
@@ -139,7 +139,17 @@ export async function POST(request: Request) {
         }
       }
 
-      return Response.json({ regenerated, mode });
+      // Hitung ulang, jangan diasumsikan. Kalau masih ada yang stale, user
+      // berhak tahu sekarang juga — bukan menemukannya sendiri nanti setelah
+      // diberi tahu operasinya "berhasil".
+      const remainingStale = (await listStaleTasks(project.id, userId)).length;
+
+      return Response.json({
+        regenerated,
+        remainingStale,
+        sourceDocumentVersion: prd.version,
+        mode,
+      });
     }
 
     const saved = await replaceTasks({

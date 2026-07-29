@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, inArray, lt, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   documents,
@@ -32,11 +32,17 @@ export type TaskDraft = {
 };
 
 /**
- * Tandai task yang sumbernya sudah ketinggalan versi.
+ * Hitung ulang penanda stale untuk seluruh task project.
  *
  * Task stale bila `documents.version > tasks.source_document_version`
  * (ARCHITECTURE §5). Dihitung ulang tiap kali daftar task dimuat atau PRD
  * di-lock ulang, jadi kolom `is_stale` hanyalah cache dari perbandingan itu.
+ *
+ * Sengaja DUA arah. Versi sebelumnya hanya pernah menyalakan `is_stale` dan
+ * tidak pernah mematikannya, sehingga kolomnya bukan lagi cache melainkan
+ * catatan permanen: sekali sebuah baris salah bernilai `true` (mis. regenerate
+ * yang gagal separuh jalan), badge "stale" menempel selamanya walaupun versi
+ * sumbernya sudah sama dengan PRD.
  */
 export async function markStaleTasks(
   projectId: string,
@@ -44,30 +50,44 @@ export async function markStaleTasks(
 ): Promise<number> {
   if (!(await ownsProject(projectId, userId))) return 0;
 
-  const staleRows = await db
-    .select({ id: tasks.id })
+  const rows = await db
+    .select({
+      id: tasks.id,
+      isStale: tasks.isStale,
+      shouldBeStale: sql<boolean>`${tasks.sourceDocumentVersion} < ${documents.version}`,
+    })
     .from(tasks)
     .innerJoin(documents, eq(documents.id, tasks.sourceDocumentId))
-    .where(
-      and(
-        eq(tasks.projectId, projectId),
-        lt(tasks.sourceDocumentVersion, documents.version),
-      ),
-    );
+    .where(eq(tasks.projectId, projectId));
 
-  if (staleRows.length === 0) return 0;
+  const turnOn = rows.filter((row) => row.shouldBeStale && !row.isStale);
+  const turnOff = rows.filter((row) => !row.shouldBeStale && row.isStale);
 
-  await db
-    .update(tasks)
-    .set({ isStale: true })
-    .where(
-      inArray(
-        tasks.id,
-        staleRows.map((row) => row.id),
-      ),
-    );
+  if (turnOn.length > 0) {
+    await db
+      .update(tasks)
+      .set({ isStale: true })
+      .where(
+        inArray(
+          tasks.id,
+          turnOn.map((row) => row.id),
+        ),
+      );
+  }
 
-  return staleRows.length;
+  if (turnOff.length > 0) {
+    await db
+      .update(tasks)
+      .set({ isStale: false })
+      .where(
+        inArray(
+          tasks.id,
+          turnOff.map((row) => row.id),
+        ),
+      );
+  }
+
+  return rows.filter((row) => row.shouldBeStale).length;
 }
 
 export async function listTasks(

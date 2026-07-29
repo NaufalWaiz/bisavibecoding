@@ -325,6 +325,12 @@ function ProjectCard({
 
       <PipelineStrip steps={pipeline.steps} percent={pipeline.percent} />
 
+      <SuccessRate
+        successRate={project.successRate}
+        rated={project.ratedCount}
+        taskCount={project.taskCount}
+      />
+
       <div className="mt-auto flex items-center justify-between gap-3 border-t border-border/60 pt-3.5">
         <div className="min-w-0">
           <p className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
@@ -395,6 +401,26 @@ function ProjectRow({
             <AlertTriangle /> {project.staleCount} stale
           </Badge>
         ) : null}
+        {project.successRate !== null ? (
+          <span
+            className="hidden font-mono text-tiny sm:inline"
+            title={`${project.ratedCount} dari ${project.taskCount} task sudah dinilai`}
+          >
+            <span
+              className={cn(
+                "font-semibold",
+                project.successRate >= 70
+                  ? "text-sage-text"
+                  : project.successRate >= 40
+                    ? "text-amber-text"
+                    : "text-danger",
+              )}
+            >
+              {project.successRate}%
+            </span>{" "}
+            <span className="text-muted-foreground">sekali jalan</span>
+          </span>
+        ) : null}
         <span className="hidden font-mono text-tiny text-muted-foreground sm:inline">
           {project.taskCount} task
         </span>
@@ -408,6 +434,79 @@ function ProjectRow({
         </span>
       </div>
     </article>
+  );
+}
+
+/**
+ * Metrik utama produk, per project (T3.4): berapa persen task yang prompt-nya
+ * bikin AI agent sekali jalan benar.
+ *
+ * Ditampilkan di kartu project — bukan hanya di dalam tab Task — supaya angka
+ * ini terlihat tanpa harus membuka project satu per satu.
+ */
+function SuccessRate({
+  successRate,
+  rated,
+  taskCount,
+}: {
+  successRate: number | null;
+  rated: number;
+  taskCount: number;
+}) {
+  // Belum ada task sama sekali: menampilkan "—%" cuma jadi baris kosong.
+  if (taskCount === 0) return null;
+
+  if (successRate === null) {
+    return (
+      <p className="text-[10px] text-muted-foreground">
+        Sekali jalan benar:{" "}
+        <span className="font-medium text-foreground">belum dinilai</span> —
+        tandai hasilnya di tab Task.
+      </p>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between text-[10px] font-medium text-muted-foreground">
+        <span>Sekali jalan benar</span>
+        <span className="font-mono">
+          <span
+            className={cn(
+              "font-semibold",
+              successRate >= 70
+                ? "text-sage-text"
+                : successRate >= 40
+                  ? "text-amber-text"
+                  : "text-danger",
+            )}
+          >
+            {successRate}%
+          </span>{" "}
+          <span className="text-muted-foreground">
+            ({rated}/{taskCount} dinilai)
+          </span>
+        </span>
+      </div>
+
+      <div
+        className="h-1.5 w-full overflow-hidden rounded-full bg-surface-sunken"
+        role="img"
+        aria-label={`${successRate} persen dari ${rated} task yang dinilai berhasil sekali jalan`}
+      >
+        <div
+          className={cn(
+            "h-full rounded-full transition-warm",
+            successRate >= 70
+              ? "bg-sage-strong"
+              : successRate >= 40
+                ? "bg-amber"
+                : "bg-danger",
+          )}
+          style={{ width: `${successRate}%` }}
+        />
+      </div>
+    </div>
   );
 }
 

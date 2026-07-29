@@ -10,6 +10,7 @@ import {
   type Project,
   type TechStack,
 } from "@/lib/db/schema";
+import { getFeedbackSummariesForProjects } from "@/lib/db/queries/task_feedback";
 
 /**
  * Semua fungsi di sini menerima `userId` dan menyaring kepemilikan secara
@@ -30,6 +31,10 @@ export type ProjectSummary = Project & {
   prdVersion: number | null;
   taskCount: number;
   staleCount: number;
+  /** Jumlah task yang sudah dinilai user (T3.4). */
+  ratedCount: number;
+  /** % task yang "sekali jalan benar"; `null` kalau belum ada yang dinilai. */
+  successRate: number | null;
 };
 
 export async function listProjectsWithSummary(
@@ -41,7 +46,7 @@ export async function listProjectsWithSummary(
   // Parallel fetch for documents & tasks summary
   const projectIds = userProjects.map((p) => p.id);
 
-  const [allDocs, allTasks] = await Promise.all([
+  const [allDocs, allTasks, feedbackSummaries] = await Promise.all([
     db
       .select({
         projectId: documents.projectId,
@@ -57,6 +62,7 @@ export async function listProjectsWithSummary(
       })
       .from(tasks)
       .where(inArray(tasks.projectId, projectIds)),
+    getFeedbackSummariesForProjects(projectIds, userId),
   ]);
 
   const docMap = new Map(allDocs.map((d) => [d.projectId, d]));
@@ -72,12 +78,15 @@ export async function listProjectsWithSummary(
   return userProjects.map((p) => {
     const doc = docMap.get(p.id);
     const t = taskMap.get(p.id) ?? { total: 0, stale: 0 };
+    const feedback = feedbackSummaries.get(p.id);
     return {
       ...p,
       prdStatus: doc ? doc.status : null,
       prdVersion: doc ? doc.version : null,
       taskCount: t.total,
       staleCount: t.stale,
+      ratedCount: feedback?.rated ?? 0,
+      successRate: feedback?.successRate ?? null,
     };
   });
 }
