@@ -17,6 +17,8 @@ import { GenerateTasksButton } from "./generate-tasks-button";
 import { TasksListClient } from "./tasks-list-client";
 import { ListChecks, Target, Lock, FileText } from "lucide-react";
 
+import { TasksViewClient } from "./tasks-view-client";
+
 export default async function TasksPage({
   params,
 }: {
@@ -51,12 +53,6 @@ export default async function TasksPage({
     feedbackByTaskMap[task.id] = feedbackByTask.get(task.id) ?? null;
   }
 
-  /*
-   * Konsistensi (T3.3) dihitung ulang terhadap PRD yang berlaku sekarang, bukan
-   * dibaca dari `consistency_warnings` yang dibekukan saat generate. Efeknya:
-   * begitu user melengkapi PRD, peringatannya hilang sendiri — tanpa harus
-   * regenerate task hanya untuk membungkam sebuah label.
-   */
   const unknownEntitiesByTask: Record<string, string[]> = {};
   for (const task of tasks) {
     unknownEntitiesByTask[task.id] = prd?.content
@@ -68,41 +64,16 @@ export default async function TasksPage({
   ];
 
   return (
-    <section className="flex flex-col gap-5">
-      <PageHeader
-        icon={ListChecks}
-        eyebrow="Tahap 3 · Eksekusi"
-        title="Task prompts"
-        description="Tiap task membawa konteksnya sendiri. Salin final prompt-nya langsung ke Claude Code, Cursor, atau Windsurf."
-        actions={
-          <GenerateTasksButton
-            projectId={project.id}
-            hasTasks={tasks.length > 0}
-            staleCount={staleCount}
-            prdLocked={prdLocked}
-          />
-        }
-      />
-
-      {!prdLocked ? (
-        <Notice
-          tone="warning"
-          action={
-            <Link
-              href={`/projects/${project.id}/prd`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-soft-border bg-card px-3 py-1.5 text-tiny font-semibold text-amber-text shadow-warm-xs transition-warm hover:bg-amber-soft"
-            >
-              <Lock className="size-3.5" />
-              Buka PRD
-            </Link>
-          }
-        >
-          Task hanya bisa dihasilkan dari PRD yang sudah dikunci — itu yang
-          membuat tiap task punya versi sumber yang bisa dilacak.
-        </Notice>
-      ) : null}
-
-      {tasks.length > 0 ? (
+    <TasksViewClient
+      projectId={project.id}
+      tasks={tasks}
+      staleCount={staleCount}
+      prdLocked={prdLocked}
+      prdVersion={prd?.version ?? null}
+      feedbackByTaskMap={feedbackByTaskMap}
+      unknownEntitiesByTask={unknownEntitiesByTask}
+      offPrdEntities={offPrdEntities}
+      insightBarNode={
         <InsightBar
           successRate={feedback.successRate}
           rated={feedback.rated}
@@ -112,85 +83,8 @@ export default async function TasksPage({
           statusCount={statusCount}
           prdVersion={prd?.version ?? null}
         />
-      ) : null}
-
-      {staleCount > 0 ? (
-        <Notice
-          tone="warning"
-          title={`${staleCount} task dibuat dari PRD versi lama`}
-          action={
-            <GenerateTasksButton
-              projectId={project.id}
-              hasTasks
-              staleCount={staleCount}
-              prdLocked={prdLocked}
-              staleOnly
-            />
-          }
-        >
-          PRD sekarang versi {prd?.version}. Regenerate task stale agar ikut
-          menyesuaikan — task lain tidak akan tersentuh.
-        </Notice>
-      ) : null}
-
-      {offPrdEntities.length > 0 ? (
-        <Notice
-          tone="warning"
-          title={`${offPrdEntities.length} entity disebut task tapi tidak ada di PRD`}
-          action={
-            <Link
-              href={`/projects/${project.id}/prd`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-amber-soft-border bg-card px-3 py-1.5 text-tiny font-semibold text-amber-text shadow-warm-xs transition-warm hover:bg-amber-soft"
-            >
-              <FileText className="size-3.5" />
-              Lengkapi PRD
-            </Link>
-          }
-        >
-          <span className="flex flex-wrap items-center gap-1.5">
-            {offPrdEntities.map((entity) => (
-              <code
-                key={entity}
-                className="rounded-md border border-amber-soft-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-amber-text"
-              >
-                {entity}
-              </code>
-            ))}
-          </span>
-          <span className="mt-2 block">
-            Ini hanya sinyal, bukan penghalang — task tetap bisa dipakai. Entah
-            PRD-nya yang kurang lengkap, atau task-nya yang mengarang entity.
-          </span>
-        </Notice>
-      ) : null}
-
-      {tasks.length === 0 ? (
-        <EmptyState
-          icon={ListChecks}
-          title="Belum ada task"
-          description={
-            prdLocked
-              ? "PRD sudah terkunci. Turunkan jadi task berukuran satu sesi fokus AI agent, lengkap dengan context slice dan acceptance criteria."
-              : "Kunci PRD terlebih dahulu, lalu task siap dihasilkan dari versi itu."
-          }
-          action={
-            <GenerateTasksButton
-              projectId={project.id}
-              hasTasks={false}
-              staleCount={0}
-              prdLocked={prdLocked}
-            />
-          }
-        />
-      ) : (
-        <TasksListClient
-          tasks={tasks}
-          projectId={project.id}
-          feedbackByTaskMap={feedbackByTaskMap}
-          unknownEntitiesByTask={unknownEntitiesByTask}
-        />
-      )}
-    </section>
+      }
+    />
   );
 }
 
