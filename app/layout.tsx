@@ -28,6 +28,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { NavigationProgress } from "@/components/ui/navigation-progress";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -39,6 +41,7 @@ export default function RootLayout({
       className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased scroll-smooth`}
     >
       <body className="bg-[#F8FAFC] flex min-h-full flex-col text-[#0F172A]">
+        <NavigationProgress />
         {children}
         <Toaster />
       </body>
