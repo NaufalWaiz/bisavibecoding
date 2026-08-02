@@ -5,6 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { getCurrentUser } from "@/lib/supabase/server";
 import { logout } from "../(auth)/actions";
 import { Activity, CreditCard, LogOut } from "lucide-react";
+import { LogoutButton } from "@/components/app/logout-button";
 
 export default async function AppLayout({
   children,
@@ -64,15 +65,7 @@ export default async function AppLayout({
             </div>
 
             <form action={logout}>
-              <Button
-                type="submit"
-                variant="ghost"
-                size="sm"
-                className="h-8 gap-1.5 rounded-full px-3 text-tiny text-muted-foreground hover:bg-danger-soft hover:text-danger border border-transparent hover:border-danger-soft-border transition-warm"
-              >
-                <LogOut className="size-3.5" />
-                <span className="hidden sm:inline">Keluar</span>
-              </Button>
+              <LogoutButton />
             </form>
           </div>
         </div>
