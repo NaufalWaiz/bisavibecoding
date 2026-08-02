@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/brand/logo";
 import { Reveal } from "@/components/motion/reveal";
+import { triggerNavProgress } from "@/components/ui/navigation-progress";
 import { InteractiveHeroPreview } from "@/components/landing/interactive-hero-preview";
 import { WikoDashboardMock } from "@/components/landing/wiko-dashboard-mock";
 import { TechMarquee } from "@/components/landing/marquee";
@@ -199,6 +200,7 @@ Impact: Prompt generator will restrict all database queries to Drizzle schemas.`
           <div className="flex items-center gap-3">
             <Link
               href="/login"
+              onClick={() => triggerNavProgress()}
               className="px-3.5 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:text-[#059669]"
             >
               Masuk
@@ -206,6 +208,7 @@ Impact: Prompt generator will restrict all database queries to Drizzle schemas.`
             {/* Electric Lime Button with Dark Navy Accent */}
             <Link
               href="/register"
+              onClick={() => triggerNavProgress()}
               className="group inline-flex items-center gap-1.5 rounded-full bg-[#BEF264] pl-4 pr-1.5 py-1.5 text-xs font-extrabold text-[#0F172A] shadow-sm transition-all hover:bg-[#a3e635] hover:scale-[1.02]"
             >
               <span>Mulai Gratis</span>
