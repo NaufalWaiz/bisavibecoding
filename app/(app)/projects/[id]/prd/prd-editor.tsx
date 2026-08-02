@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { motion, AnimatePresence } from "motion/react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,17 +23,24 @@ import { cn } from "@/lib/utils";
 import type { Document } from "@/lib/db/schema";
 import { lockPrdAction, savePrdAction, unlockPrdAction } from "./actions";
 import {
+  Clock,
+  Compass,
   Copy,
+  Database,
   Download,
   Eye,
   FileText,
+  Layers,
   ListTree,
   Lock,
   LockOpen,
   MoreHorizontal,
   PencilLine,
+  PenTool,
   RotateCcw,
   Save,
+  Search,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 
@@ -207,27 +215,27 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
   /* --------------------------------------------------------------- render */
 
   const primaryAction = !hasContent ? (
-    <Button onClick={() => void generate()} disabled={busy} className="gap-1.5">
-      <Sparkles className="size-4" />
-      {streaming ? "Menulis PRD…" : "Generate PRD"}
+    <Button onClick={() => void generate()} disabled={busy} className="gap-1.5 font-semibold shadow-warm-brand cursor-pointer">
+      <Sparkles className={cn("size-4", streaming && "animate-spin text-brand")} />
+      {streaming ? "Menyusun PRD…" : "Generate PRD"}
     </Button>
   ) : isLocked ? (
     <Button
       variant="outline"
       onClick={unlockForEdit}
       disabled={busy}
-      className="gap-1.5"
+      className="gap-1.5 cursor-pointer"
     >
       <LockOpen className="size-4" />
       Buka kunci & edit
     </Button>
   ) : dirty ? (
-    <Button onClick={save} disabled={busy} className="gap-1.5">
+    <Button onClick={save} disabled={busy} className="gap-1.5 cursor-pointer">
       <Save className="size-4" />
       Simpan perubahan
     </Button>
   ) : (
-    <Button onClick={lock} disabled={busy} className="gap-1.5">
+    <Button onClick={lock} disabled={busy} className="gap-1.5 cursor-pointer">
       <Lock className="size-4" />
       Kunci PRD
     </Button>
@@ -247,7 +255,7 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
                 variant="outline"
                 onClick={save}
                 disabled={busy}
-                className="gap-1.5"
+                className="gap-1.5 cursor-pointer"
               >
                 <Save className="size-4" />
                 Simpan
@@ -276,6 +284,7 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
                       disabled={busy}
                       aria-label="Generate ulang PRD"
                       title="Generate ulang PRD"
+                      className="cursor-pointer"
                     >
                       <RotateCcw className="size-4" />
                     </Button>
@@ -284,7 +293,7 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon" aria-label="Aksi lain">
+                    <Button variant="outline" size="icon" aria-label="Aksi lain" className="cursor-pointer">
                       <MoreHorizontal className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
@@ -369,7 +378,7 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
         <Notice
           tone="warning"
           action={
-            <Button size="sm" onClick={lock} disabled={busy} className="gap-1.5">
+            <Button size="sm" onClick={lock} disabled={busy} className="gap-1.5 cursor-pointer">
               <Lock className="size-3.5" />
               Kunci PRD
             </Button>
@@ -381,7 +390,9 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
       ) : null}
 
       {/* ------------------------------------------------------------ isi */}
-      {!hasContent && !streaming ? (
+      {streaming ? (
+        <PrdStreamingShowcase content={content} streaming={streaming} />
+      ) : !hasContent ? (
         <EmptyState
           icon={FileText}
           title="Belum ada PRD"
@@ -391,7 +402,7 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
               : "PRD diturunkan dari percakapan intake. Kamu bisa langsung generate, tapi hasilnya jauh lebih tajam kalau ide sudah diklarifikasi dulu."
           }
           action={
-            <Button onClick={() => void generate()} disabled={busy} className="gap-2">
+            <Button onClick={() => void generate()} disabled={busy} className="gap-2 font-semibold shadow-warm-brand cursor-pointer">
               <Sparkles className="size-4" />
               Generate PRD sekarang
             </Button>
@@ -426,13 +437,6 @@ export function PrdEditor({ projectId, document, hasConversation = false }: Prop
           <article className="min-w-0 flex-1 rounded-2xl border border-border/80 bg-card p-6 shadow-warm-xs sm:p-8">
             <div className="mx-auto max-w-reading">
               <StreamMarkdown content={content} className="text-small text-foreground" />
-
-              {streaming ? (
-                <p className="mt-5 flex items-center gap-2 text-tiny text-muted-foreground">
-                  <span className="size-1.5 animate-ping rounded-full bg-brand" />
-                  bisavibecoding sedang menyusun PRD…
-                </p>
-              ) : null}
             </div>
           </article>
         </div>
@@ -489,50 +493,50 @@ function TableOfContents({
   return (
     <nav
       aria-label="Daftar isi PRD"
-      className="hidden xl:sticky xl:top-36 xl:block w-60 shrink-0"
+      className="hidden xl:sticky xl:top-36 xl:block w-64 shrink-0"
     >
-      <div className="rounded-2xl border border-border/80 bg-card p-3.5 shadow-warm-xs backdrop-blur-sm">
+      <div className="rounded-2xl border border-border/80 bg-surface/90 p-4 shadow-warm-xs backdrop-blur-md space-y-3">
+        {/* Header Navigation Bar */}
         <div className="flex items-center justify-between border-b border-border/60 pb-2.5">
-          <div className="flex items-center gap-1.5">
-            <span className="flex size-6 items-center justify-center rounded-md bg-brand-soft border border-brand-soft-border text-brand-strong shadow-warm-xs">
+          <div className="flex items-center gap-2">
+            <span className="flex size-5.5 items-center justify-center rounded-md bg-brand-soft text-brand-strong border border-brand-soft-border/60">
               <ListTree className="size-3.5" />
             </span>
-            <span className="text-tiny font-bold tracking-wider text-foreground uppercase">
+            <span className="text-[11px] font-bold tracking-wider text-muted-foreground uppercase">
               Daftar Isi
             </span>
           </div>
-          <span className="rounded-full border border-border bg-surface-sunken px-2 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
-            {headings.length} Bagian
+          <span className="rounded-full border border-border/80 bg-surface-sunken px-2 py-0.5 font-mono text-[10px] font-medium text-muted-foreground">
+            {headings.length} bagian
           </span>
         </div>
 
-        <ul className="pane-scroll mt-2.5 flex max-h-[55vh] flex-col gap-1 overflow-y-auto pr-1">
-          {headings.map((heading, idx) => {
+        {/* Headings List with Clean Indicator Dots */}
+        <ul className="pane-scroll flex max-h-[55vh] flex-col gap-0.5 overflow-y-auto pr-1">
+          {headings.map((heading) => {
             const isActive = activeId === heading.id;
             return (
               <li key={heading.id}>
                 <a
                   href={`#${heading.id}`}
                   className={cn(
-                    "group flex items-center gap-2 rounded-lg px-2 py-1 text-tiny transition-all duration-200",
-                    heading.level > 2 ? "ml-2.5 text-[11px]" : "font-medium",
+                    "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-[12px] transition-all duration-200",
+                    heading.level > 2 ? "ml-3 text-[11.5px]" : "",
                     isActive
-                      ? "bg-brand-soft/80 text-brand-stronger font-bold border-l-2 border-brand-strong shadow-warm-xs pl-1.5"
-                      : "text-muted-foreground hover:bg-surface-sunken hover:text-foreground",
+                      ? "bg-brand-soft/40 text-foreground font-semibold border-l-2 border-brand-strong pl-2 shadow-warm-xs"
+                      : "text-muted-foreground hover:bg-surface-sunken/60 hover:text-foreground font-normal"
                   )}
                   title={heading.text}
                 >
                   <span
                     className={cn(
-                      "flex size-4.5 shrink-0 items-center justify-center rounded font-mono text-[9px] font-bold transition-colors",
+                      "size-1.5 shrink-0 rounded-full transition-all duration-200",
                       isActive
-                        ? "bg-brand-strong text-white"
-                        : "bg-surface-sunken text-muted-foreground group-hover:bg-card group-hover:text-foreground",
+                        ? "bg-brand-strong scale-125 shadow-[0_0_6px_rgba(5,150,105,0.6)]"
+                        : "bg-border-strong/70 group-hover:bg-muted-foreground"
                     )}
-                  >
-                    {idx + 1}
-                  </span>
-                  <span className="truncate leading-tight">{heading.text}</span>
+                  />
+                  <span className="truncate leading-snug">{heading.text}</span>
                 </a>
               </li>
             );
@@ -544,7 +548,7 @@ function TableOfContents({
             variant="outline"
             size="sm"
             onClick={onEdit}
-            className="mt-3 h-8 w-full gap-1.5 text-tiny rounded-lg shadow-warm-xs"
+            className="h-8 w-full gap-1.5 text-tiny font-medium rounded-xl border-border/80 bg-surface shadow-warm-xs hover:bg-brand-soft/40 hover:text-brand-stronger cursor-pointer"
           >
             <PencilLine className="size-3.5 text-brand-strong" />
             Edit Markdown
@@ -620,6 +624,136 @@ function MarkdownEditor({
         spellCheck={false}
         className="pane-scroll field-sizing-fixed min-h-[65vh] resize-none rounded-none border-0 bg-transparent p-5 font-mono text-tiny leading-relaxed shadow-none focus-visible:ring-0"
       />
+    </div>
+  );
+}
+
+function PrdStreamingShowcase({ content, streaming }: { content: string; streaming: boolean }) {
+  const [elapsed, setElapsed] = useState(0);
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const PRD_THINKING_STEPS = [
+    { label: "Membaca percakapan intake & mengekstrak konteks produk", icon: Search },
+    { label: "Menyusun ringkasan eksekutif & arsitektur sistem", icon: Layers },
+    { label: "Mengkristalkan skema database, tabel, & relasi Drizzle", icon: Database },
+    { label: "Memetakan route API, server actions, & boundary", icon: Compass },
+    { label: "Menentukan rule guardrails & kebijakan keamanan", icon: ShieldCheck },
+    { label: "Menuliskan dokumen PRD Markdown terstruktur v1.0", icon: PenTool },
+  ];
+
+  useEffect(() => {
+    if (!streaming) return;
+    const startTime = Date.now();
+    const timerInterval = setInterval(() => {
+      setElapsed((Date.now() - startTime) / 1000);
+    }, 100);
+
+    const stepInterval = setInterval(() => {
+      setStepIndex((prev) => (prev + 1) % PRD_THINKING_STEPS.length);
+    }, 1400);
+
+    return () => {
+      clearInterval(timerInterval);
+      clearInterval(stepInterval);
+    };
+  }, [streaming]);
+
+  const CurrentStepIcon = PRD_THINKING_STEPS[stepIndex].icon;
+
+  return (
+    <div className="flex flex-col gap-4 animate-fade-up">
+      {/* Live AI Header & Temporary Elapsed Timer Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-brand-soft-border bg-[#0F172A] px-5 py-3.5 text-white shadow-warm-md">
+        <div className="flex items-center gap-3">
+          <span className="relative flex size-8 items-center justify-center rounded-xl bg-brand-soft/20 border border-brand-soft-border/40">
+            <Sparkles className="size-4 text-brand animate-spin" style={{ animationDuration: "3s" }} />
+            <span className="absolute -top-1 -right-1 size-2.5 rounded-full bg-brand animate-ping" />
+          </span>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-heading text-small font-bold text-white">
+                Sintesis PRD Arsitektur AI
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-brand-soft-border/50 bg-brand-soft/20 px-2.5 py-0.5 font-mono text-[10px] font-semibold text-brand">
+                <span className="size-1.5 rounded-full bg-brand animate-pulse" />
+                {content.length === 0 ? "Menganalisis" : "Generating"}
+              </span>
+            </div>
+            <p className="text-tiny text-slate-300">
+              Mengubah ide & intake menjadi single source of truth PRD terstruktur.
+            </p>
+          </div>
+        </div>
+
+        {/* Realtime Elapsed Timer Badge */}
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-800/80 px-3 py-1 font-mono text-tiny font-bold text-slate-200 shadow-warm-xs">
+            <Clock className="size-3.5 text-brand" />
+            <span>{elapsed.toFixed(1)}s</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Main Content Area: Interactive Showcase or Streaming Document */}
+      <article className="min-w-0 flex-1 rounded-2xl border border-brand-soft-border bg-surface p-6 shadow-warm-md sm:p-8">
+        <div className="mx-auto max-w-reading">
+          {content.length === 0 ? (
+            /* Interactive Showcase when AI is thinking / waiting for first stream token */
+            <div className="flex flex-col gap-5 py-4">
+              {/* Dynamic Thinking Step Ticker */}
+              <div className="flex items-center justify-between rounded-xl border border-brand-soft-border/80 bg-brand-soft/60 px-4 py-3 shadow-warm-xs">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={stepIndex}
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex items-center gap-2.5 text-small font-bold text-brand-stronger"
+                  >
+                    <CurrentStepIcon className="size-4 text-brand-strong shrink-0" />
+                    <span>{PRD_THINKING_STEPS[stepIndex].label}…</span>
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Bouncing Radar Waveform */}
+                <div className="flex items-center gap-1">
+                  <span className="size-2 rounded-full bg-brand-strong animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="size-2 rounded-full bg-brand-strong animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="size-2 rounded-full bg-brand-strong animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+
+              {/* Shimmer Scanline Preview Box */}
+              <div className="relative overflow-hidden rounded-2xl border border-border/80 bg-surface-sunken/40 p-6 space-y-3.5">
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-brand/20 to-transparent animate-shimmer"
+                  style={{ backgroundSize: "200% 100%" }}
+                />
+                <div className="flex items-center gap-3">
+                  <span className="h-4 w-1/3 rounded-lg bg-brand-soft border border-brand-soft-border animate-pulse" />
+                  <span className="h-4 w-1/4 rounded-lg bg-surface-sunken animate-pulse" />
+                </div>
+                <span className="block h-3.5 w-full rounded-md bg-surface-sunken/90 animate-pulse" />
+                <span className="block h-3.5 w-5/6 rounded-md bg-surface-sunken/90 animate-pulse" />
+                <span className="block h-3.5 w-4/6 rounded-md bg-surface-sunken/90 animate-pulse" />
+                <div className="pt-2 flex gap-3">
+                  <span className="h-3 w-1/2 rounded-md bg-brand-soft/60 animate-pulse" />
+                  <span className="h-3 w-1/3 rounded-md bg-surface-sunken animate-pulse" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Stream Markdown with Glowing Terminal Cursor */
+            <div className="relative">
+              <StreamMarkdown content={content} className="text-small text-foreground leading-relaxed" />
+              {streaming ? (
+                <span className="inline-block ml-1.5 h-4.5 w-2 rounded-xs bg-brand-strong animate-pulse align-middle shadow-[0_0_10px_rgba(190,242,100,0.9)]" />
+              ) : null}
+            </div>
+          )}
+        </div>
+      </article>
     </div>
   );
 }
