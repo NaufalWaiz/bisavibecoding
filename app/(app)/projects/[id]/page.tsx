@@ -28,6 +28,8 @@ export default async function ProjectIntakePage({
 
       <IntakeChat
         projectId={project.id}
+        projectName={project.name}
+        projectDescription={project.description ?? undefined}
         initialConversation={project.conversation ?? []}
       />
     </section>

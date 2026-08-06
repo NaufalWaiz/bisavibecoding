@@ -1,17 +1,10 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
-  subsets: ["latin"],
-  display: "swap",
-  axes: ["SOFT", "WONK"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
   subsets: ["latin"],
   display: "swap",
 });
@@ -24,8 +17,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "bisavibecoding — lapisan perencanaan untuk vibe coding",
-    template: "%s — bisavibecoding",
+    default: "bisavibecoding: Lapisan Perencanaan AI untuk Vibe Coding",
+    template: "%s: bisavibecoding",
   },
   description:
     "Ubah ide mentah jadi PRD yang matang, lalu jadi task siap tempel ke AI coding agent.",
@@ -35,6 +28,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { NavigationProgress } from "@/components/ui/navigation-progress";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,12 +38,14 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${inter.variable} ${fraunces.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${jetbrainsMono.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="bg-warm-canvas flex min-h-full flex-col bg-background text-foreground">
+      <body className="bg-[#F8FAFC] flex min-h-full flex-col text-[#0F172A]">
+        <NavigationProgress />
         {children}
         <Toaster />
       </body>
     </html>
   );
 }
+

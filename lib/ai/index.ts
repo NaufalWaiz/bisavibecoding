@@ -14,7 +14,7 @@ import {
   generateText,
   streamText as aiStreamText,
   type LanguageModelUsage,
-  type ModelMessage,
+  type CoreMessage,
 } from "ai";
 import type { z } from "zod";
 import { serverEnv } from "@/lib/env";
@@ -58,15 +58,15 @@ function toUsageReport(
 ): UsageReport {
   return {
     model: resolveModel(tier),
-    promptTokens: usage?.inputTokens ?? 0,
-    completionTokens: usage?.outputTokens ?? 0,
+    promptTokens: usage?.promptTokens ?? 0,
+    completionTokens: usage?.completionTokens ?? 0,
   };
 }
 
 export type StreamOptions = {
   system: string;
   prompt?: string;
-  messages?: ModelMessage[];
+  messages?: CoreMessage[];
   tier?: ModelTier;
   temperature?: number;
   maxOutputTokens?: number;
@@ -152,12 +152,12 @@ export function streamText(options: StreamOptions): Response {
       ? { messages: options.messages }
       : { prompt: options.prompt ?? "" }),
     temperature: options.temperature ?? 0.7,
-    maxOutputTokens: options.maxOutputTokens ?? 4000,
+    maxTokens: options.maxOutputTokens ?? 4000,
     onError: ({ error }) => {
       streamFailure = error;
     },
-    onFinish: async ({ totalUsage }) => {
-      await options.onUsage?.(toUsageReport(tier, totalUsage));
+    onFinish: async ({ usage }) => {
+      await options.onUsage?.(toUsageReport(tier, usage));
     },
   });
 
@@ -255,7 +255,7 @@ export async function generateJson(
     system: `${options.system}\n\nPENTING: balas HANYA dengan satu objek JSON valid. Tanpa penjelasan, tanpa teks pembuka, tanpa fence markdown.`,
     prompt: options.prompt,
     temperature: options.temperature ?? 0.3,
-    maxOutputTokens: options.maxOutputTokens ?? 12000,
+    maxTokens: options.maxOutputTokens ?? 12000,
   });
 
   return {
@@ -308,7 +308,7 @@ export async function generateStructured<T>(
       system: options.system,
       prompt,
       temperature: options.temperature ?? 0.3,
-      maxOutputTokens: options.maxOutputTokens ?? 8000,
+      maxTokens: options.maxOutputTokens ?? 8000,
     });
 
   try {

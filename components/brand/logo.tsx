@@ -39,17 +39,17 @@ export function LogoMark({
     >
       <defs>
         <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#e2744e" />
-          <stop offset="50%" stopColor="#c55333" />
-          <stop offset="100%" stopColor="#a83c21" />
+          <stop offset="0%" stopColor="#BEF264" />
+          <stop offset="60%" stopColor="#84CC16" />
+          <stop offset="100%" stopColor="#0F172A" />
         </linearGradient>
       </defs>
 
       {/* Main Squircle Tile */}
       <rect width="32" height="32" rx="9" fill={`url(#${gradientId})`} />
       
-      {/* 100% Symmetrical White Layered Monogram */}
-      <LogoGlyph className="text-white" />
+      {/* 100% Symmetrical Dark Navy Monogram */}
+      <LogoGlyph className="text-[#0F172A]" />
     </svg>
   );
 }
@@ -63,7 +63,7 @@ export function LogoMarkPlain({ className }: { className?: string }) {
       height={32}
       role="img"
       aria-label="bisavibecoding"
-      className={cn("size-8 shrink-0 text-brand-strong", className)}
+      className={cn("size-8 shrink-0 text-[#0F172A]", className)}
     >
       <LogoGlyph />
     </svg>
@@ -72,17 +72,17 @@ export function LogoMarkPlain({ className }: { className?: string }) {
 
 /**
  * Wordmark: Tipografi bersih, modern & ramah.
- * Suku kata "vibe" disorot dengan warna terakota tebal.
+ * Suku kata "vibe" disorot dengan warna lime/purple tebal.
  */
 export function Wordmark({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "font-heading leading-none tracking-tight lowercase text-foreground",
+        "font-sans leading-none tracking-tight lowercase text-[#0F172A]",
         className,
       )}
     >
-      bisa<span className="text-brand-strong font-bold">vibe</span>coding
+      bisa<span className="text-[#059669] font-extrabold">vibe</span>coding
     </span>
   );
 }

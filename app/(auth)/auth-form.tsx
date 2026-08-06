@@ -43,18 +43,21 @@ const COPY = {
   },
 } as const;
 
+import { triggerNavProgress } from "@/components/ui/navigation-progress";
+
 function SubmitButton({ label, isLogin }: { label: string; isLogin: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1917] px-6 text-small font-semibold text-white shadow-warm-md transition-all duration-300 hover:bg-[#322c27] hover:shadow-warm-lg hover:scale-[1.02] disabled:opacity-60 cursor-pointer"
+      onClick={() => triggerNavProgress()}
+      className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1c1917] px-6 text-small font-semibold text-white shadow-warm-md transition-all duration-300 hover:bg-[#322c27] hover:shadow-warm-lg hover:scale-[1.02] disabled:opacity-75 cursor-pointer"
     >
       {pending ? (
         <>
-          <Loader2 className="size-4 animate-spin" />
-          <span>Memproses...</span>
+          <Loader2 className="size-4 animate-spin text-brand" />
+          <span>{isLogin ? "Memproses Masuk ke Dashboard…" : "Memproses Pendaftaran Akun…"}</span>
         </>
       ) : (
         <>
@@ -131,6 +134,7 @@ export function AuthForm({ mode, action, next }: Props) {
           <div className="flex items-center rounded-2xl border border-black/5 bg-[#faf8f5] p-1 text-tiny font-semibold mb-8">
             <Link
               href="/login"
+              onClick={() => triggerNavProgress()}
               className={`flex-1 text-center py-2.5 rounded-xl transition-all duration-200 ${
                 isLogin
                   ? "bg-white text-foreground shadow-warm-xs font-bold border border-black/5"
@@ -141,6 +145,7 @@ export function AuthForm({ mode, action, next }: Props) {
             </Link>
             <Link
               href="/register"
+              onClick={() => triggerNavProgress()}
               className={`flex-1 text-center py-2.5 rounded-xl transition-all duration-200 ${
                 !isLogin
                   ? "bg-white text-foreground shadow-warm-xs font-bold border border-black/5"

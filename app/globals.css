@@ -1,155 +1,157 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant open (&[data-state="open"], &[data-open]);
+@custom-variant closed (&[data-state="closed"], &[data-closed]);
 
 /* ==========================================================================
    DESIGN TOKENS — Arsitek (bisavibecoding)
    ========================================================================== */
 
 :root {
-  /* --- Netral hangat ---------------------------------------------------- */
-  --background: #fbf7f0;
-  --surface: #fffdfb;
-  --surface-sunken: #f4ede3;
-  --surface-raised: #f8f2e8;
-  --foreground: #2b2622;
-  --foreground-muted: #6e6459;
-  --border: #e9e0d4;
-  --border-strong: #ddd1c0;
+  /* --- Canvas netral bersih --------------------------------------------- */
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-sunken: #f1f5f9;
+  --surface-raised: #f8fafc;
+  --foreground: #0f172a;
+  --foreground-muted: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  /* --- Aksen primer: terracotta hangat ---------------------------------- */
-  --brand: #e0714a;
-  --brand-strong: #c25334;
-  --brand-stronger: #a8452b;
-  --brand-soft: #fbeae2;
-  --brand-soft-border: #f3d3c4;
+  /* --- Aksen primer: Vibrant Electric Lime (#BEF264) -------------------- */
+  --brand: #bef264;
+  --brand-strong: #3f6212;
+  --brand-stronger: #1a2e05;
+  --brand-soft: #f7fee7;
+  --brand-soft-border: #d9f99d;
 
-  /* --- Aksen sekunder: sage (positif/sukses) ---------------------------- */
-  --sage: #7fa88a;
-  --sage-strong: #5e8a6d;
-  --sage-text: #4a7358;
-  --sage-soft: #eaf1ec;
-  --sage-soft-border: #cfe0d5;
+  /* --- Aksen sekunder: Dark Navy Slate (#0F172A) ------------------------- */
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --navy-soft: #f1f5f9;
+  --navy-soft-border: #e2e8f0;
+
+  /* --- Aksen tersier: Emerald Green (#059669) -------------------------- */
+  --emerald: #059669;
+  --emerald-strong: #047857;
+  --emerald-soft: #ecfdf5;
+  --emerald-soft-border: #a7f3d0;
 
   /* --- Warning / stale: amber ------------------------------------------- */
-  --amber: #e5a24b;
-  --amber-text: #8a5a16;
-  --amber-soft: #fcf1df;
-  --amber-soft-border: #f2ddb8;
+  --amber: #f59e0b;
+  --amber-text: #b45309;
+  --amber-soft: #fffbeb;
+  --amber-soft-border: #fde68a;
 
   /* --- Bahaya ------------------------------------------------------------ */
-  --danger: #b0392b;
-  --danger-soft: #fbeae7;
-  --danger-soft-border: #f0cdc6;
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --danger-soft-border: #fecaca;
 
-  /* --- Permukaan kode gelap ---------------------------------------------
-     Panel `final_prompt` adalah satu-satunya area gelap di aplikasi. Warnanya
-     dibuat cokelat-hangat, bukan zinc netral, supaya tetap satu keluarga
-     dengan kanvas terracotta di sekitarnya. */
-  --code-bg: #221d1a;
-  --code-bg-raised: #2c2521;
-  --code-border: #3a312c;
-  --code-foreground: #ece4dc;
-  --code-muted: #a2938a;
+  /* --- Permukaan kode gelap --------------------------------------------- */
+  --code-bg: #0f172a;
+  --code-bg-raised: #1e293b;
+  --code-border: #334155;
+  --code-foreground: #f8fafc;
+  --code-muted: #94a3b8;
 
-  /* --- Pemetaan ke semantik shadcn -------------------------------------- */
+  /* --- Pemetaan ke semantik --------------------------------------------- */
   --card: var(--surface);
   --card-foreground: var(--foreground);
   --popover: var(--surface);
   --popover-foreground: var(--foreground);
-  --primary: var(--brand-strong);
-  --primary-foreground: #fffdfb;
+  --primary: var(--brand);
+  --primary-foreground: var(--navy);
   --secondary: var(--surface-sunken);
   --secondary-foreground: var(--foreground);
   --muted: var(--surface-sunken);
   --muted-foreground: var(--foreground-muted);
   --accent: var(--brand-soft);
-  --accent-foreground: var(--brand-stronger);
+  --accent-foreground: var(--brand-strong);
   --destructive: var(--danger);
-  --destructive-foreground: #fffdfb;
+  --destructive-foreground: #ffffff;
   --input: var(--border);
   --ring: var(--brand-strong);
-  --overlay: rgba(43, 38, 34, 0.25);
+  --overlay: rgba(15, 23, 42, 0.4);
 
-  /* --- Radius: membulat ramah ------------------------------------------- */
-  --radius-token-sm: 6px;
-  --radius-token-md: 8px;
-  --radius-token-lg: 10px;
-  --radius-token-xl: 14px;
-  --radius-token-2xl: 16px;
-  --radius-token-3xl: 24px;
+  /* --- Radius: membulat modern & soft ----------------------------------- */
+  --radius-token-sm: 8px;
+  --radius-token-md: 12px;
+  --radius-token-lg: 16px;
+  --radius-token-xl: 20px;
+  --radius-token-2xl: 24px;
+  --radius-token-3xl: 32px;
 
-  /* --- Bayangan hangat -------------------------------------------------- */
-  --shadow-warm-xs: 0 1px 2px rgba(88, 66, 44, 0.05);
-  --shadow-warm-sm:
-    0 1px 2px rgba(88, 66, 44, 0.04), 0 2px 6px rgba(88, 66, 44, 0.05);
-  --shadow-warm-md:
-    0 1px 2px rgba(88, 66, 44, 0.04), 0 4px 12px rgba(88, 66, 44, 0.06),
-    0 12px 24px -12px rgba(88, 66, 44, 0.08);
-  --shadow-warm-lg:
-    0 2px 4px rgba(88, 66, 44, 0.04), 0 8px 20px rgba(88, 66, 44, 0.07),
-    0 24px 48px -20px rgba(88, 66, 44, 0.12);
-  --shadow-warm-brand: 0 6px 16px -6px rgba(194, 83, 52, 0.45);
+  /* --- Bayangan modern -------------------------------------------------- */
+  --shadow-warm-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-warm-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.05);
+  --shadow-warm-md: 0 8px 24px -6px rgba(15, 23, 42, 0.08);
+  --shadow-warm-lg: 0 16px 36px -8px rgba(15, 23, 42, 0.12);
+  --shadow-warm-brand: 0 10px 25px -5px rgba(190, 242, 100, 0.5);
 }
 
 .dark {
-  --background: #fbf7f0;
-  --surface: #fffdfb;
-  --surface-sunken: #f4ede3;
-  --surface-raised: #f8f2e8;
-  --foreground: #2b2622;
-  --foreground-muted: #6e6459;
-  --border: #e9e0d4;
-  --border-strong: #ddd1c0;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --surface-sunken: #f1f5f9;
+  --surface-raised: #f8fafc;
+  --foreground: #0f172a;
+  --foreground-muted: #64748b;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
 
-  --brand: #e0714a;
-  --brand-strong: #c25334;
-  --brand-stronger: #a8452b;
-  --brand-soft: #fbeae2;
-  --brand-soft-border: #f3d3c4;
+  --brand: #bef264;
+  --brand-strong: #3f6212;
+  --brand-stronger: #1a2e05;
+  --brand-soft: #f7fee7;
+  --brand-soft-border: #d9f99d;
 
-  --sage: #7fa88a;
-  --sage-strong: #5e8a6d;
-  --sage-text: #4a7358;
-  --sage-soft: #eaf1ec;
-  --sage-soft-border: #cfe0d5;
+  --navy: #0f172a;
+  --navy-light: #1e293b;
+  --navy-soft: #f1f5f9;
+  --navy-soft-border: #e2e8f0;
 
-  --amber: #e5a24b;
-  --amber-text: #8a5a16;
-  --amber-soft: #fcf1df;
-  --amber-soft-border: #f2ddb8;
+  --emerald: #059669;
+  --emerald-strong: #047857;
+  --emerald-soft: #ecfdf5;
+  --emerald-soft-border: #a7f3d0;
 
-  --danger: #b0392b;
-  --danger-soft: #fbeae7;
-  --danger-soft-border: #f0cdc6;
+  --amber: #f59e0b;
+  --amber-text: #b45309;
+  --amber-soft: #fffbeb;
+  --amber-soft-border: #fde68a;
+
+  --danger: #ef4444;
+  --danger-soft: #fef2f2;
+  --danger-soft-border: #fecaca;
 }
 
 @theme inline {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-plus-jakarta-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
 
   --text-display: 3.25rem;
   --text-display--line-height: 1.06;
   --text-display--letter-spacing: -0.022em;
-  --text-display--font-weight: 600;
+  --text-display--font-weight: 700;
 
   --text-h1: 2.25rem;
   --text-h1--line-height: 1.14;
   --text-h1--letter-spacing: -0.018em;
-  --text-h1--font-weight: 600;
+  --text-h1--font-weight: 700;
 
   --text-h2: 1.6rem;
   --text-h2--line-height: 1.25;
   --text-h2--letter-spacing: -0.012em;
-  --text-h2--font-weight: 600;
+  --text-h2--font-weight: 700;
 
   --text-h3: 1.2rem;
   --text-h3--line-height: 1.35;
   --text-h3--letter-spacing: -0.006em;
-  --text-h3--font-weight: 600;
+  --text-h3--font-weight: 700;
 
   --text-body-lg: 1.125rem;
   --text-body-lg--line-height: 1.6;
@@ -198,11 +200,15 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-soft-border: var(--brand-soft-border);
 
-  --color-sage: var(--sage);
-  --color-sage-strong: var(--sage-strong);
-  --color-sage-text: var(--sage-text);
-  --color-sage-soft: var(--sage-soft);
-  --color-sage-soft-border: var(--sage-soft-border);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-navy-soft: var(--navy-soft);
+  --color-navy-soft-border: var(--navy-soft-border);
+
+  --color-emerald: var(--emerald);
+  --color-emerald-strong: var(--emerald-strong);
+  --color-emerald-soft: var(--emerald-soft);
+  --color-emerald-soft-border: var(--emerald-soft-border);
 
   --color-amber: var(--amber);
   --color-amber-text: var(--amber-text);
@@ -219,8 +225,6 @@
   --color-code-foreground: var(--code-foreground);
   --color-code-muted: var(--code-muted);
 
-  /* Delay-nya membaca `--stagger` dari elemen, jadi satu utility bisa dipakai
-     berurutan dalam satu grup tanpa kelas tambahan per-item. */
   --animate-fade-up: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)
     calc(var(--stagger, 0) * 60ms) both;
   --animate-shimmer: shimmer 1.6s ease-in-out infinite;
@@ -295,17 +299,17 @@
     background:
       radial-gradient(
         58rem 34rem at 12% -8%,
-        color-mix(in oklab, var(--brand) 13%, transparent),
+        color-mix(in oklab, var(--brand) 18%, transparent),
         transparent 70%
       ),
       radial-gradient(
         44rem 30rem at 96% 4%,
-        color-mix(in oklab, var(--amber) 12%, transparent),
+        color-mix(in oklab, var(--emerald) 12%, transparent),
         transparent 68%
       ),
       radial-gradient(
         50rem 40rem at 50% 104%,
-        color-mix(in oklab, var(--sage) 10%, transparent),
+        color-mix(in oklab, var(--brand) 14%, transparent),
         transparent 70%
       );
   }
