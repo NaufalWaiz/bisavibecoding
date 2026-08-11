@@ -148,7 +148,7 @@ export function InteractiveHeroPreview() {
         </div>
 
         {/* Interactive Tabs Row */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 border-b border-slate-100 bg-slate-50/50 p-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 border-b border-slate-100 bg-slate-50/50 p-1.5 sm:p-2">
           {STAGES.map((s, idx) => {
             const Icon = s.icon;
             const isActive = activeTab === idx;
@@ -157,14 +157,14 @@ export function InteractiveHeroPreview() {
                 key={s.id}
                 type="button"
                 onClick={() => setActiveTab(idx)}
-                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-300 ${
+                className={`flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl px-2 py-2 sm:px-3 sm:py-2.5 text-[11px] sm:text-xs font-bold transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? "bg-[#0F172A] text-white shadow-sm scale-[1.02]"
+                    ? "bg-[#0F172A] text-white shadow-sm scale-[1.01]"
                     : "text-slate-500 hover:text-slate-900 hover:bg-white/60"
                 }`}
               >
-                <Icon className={`size-3.5 ${isActive ? "text-[#BEF264]" : "text-slate-400"}`} />
-                <span>{s.tabLabel}</span>
+                <Icon className={`size-3.5 shrink-0 ${isActive ? "text-[#BEF264]" : "text-slate-400"}`} />
+                <span className="truncate">{s.tabLabel}</span>
               </button>
             );
           })}

@@ -11,6 +11,7 @@ import { TechMarquee } from "@/components/landing/marquee";
 import { WikoFaq } from "@/components/landing/wiko-faq";
 import { SectionDivider } from "@/components/landing/section-divider";
 import { PricingCards } from "@/components/landing/pricing-cards";
+import { LandingNavbar } from "@/components/landing/landing-navbar";
 import {
   ArrowUpRight,
   Sparkles,
@@ -162,7 +163,7 @@ Impact: Prompt generator will restrict all database queries to Drizzle schemas.`
   ];
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-[#0F172A] font-sans antialiased overflow-x-hidden selection:bg-[#BEF264] selection:text-[#0F172A]">
+    <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-[#0F172A] font-sans antialiased selection:bg-[#BEF264] selection:text-[#0F172A]">
       {/* Ambient Background Glow Mesh */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-linear-to-b from-[#BEF264]/20 via-emerald-500/10 to-transparent blur-3xl opacity-80" />
@@ -170,55 +171,8 @@ Impact: Prompt generator will restrict all database queries to Drizzle schemas.`
         <div className="absolute top-2/3 -right-60 w-[500px] h-[500px] bg-emerald-500/10 blur-3xl rounded-full" />
       </div>
 
-      {/* 1. High-End Floating Glass Header */}
-      <header className="sticky top-5 z-50 mx-auto w-[calc(100%-2rem)] max-w-4xl rounded-full border border-slate-200/80 bg-white/85 px-6 py-2.5 backdrop-blur-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] transition-all">
-        <div className="flex items-center justify-between gap-4">
-          <Link href="/" className="group flex items-center gap-2">
-            <Logo
-              markClassName="size-7 rounded-lg transition-transform group-hover:scale-105"
-              wordmarkClassName="text-sm font-extrabold text-[#0F172A] tracking-tight"
-              gradientId="bvc-floating-logo"
-            />
-          </Link>
-
-          {/* Clean Navigation Links */}
-          <nav className="hidden items-center gap-7 text-xs font-bold text-slate-600 sm:flex">
-            <a href="#pipeline" className="transition-colors hover:text-[#059669]">
-              Alur Kerja
-            </a>
-            <a href="#features" className="transition-colors hover:text-[#059669]">
-              Fitur
-            </a>
-            <a href="#pricing" className="transition-colors hover:text-[#059669]">
-              Harga
-            </a>
-            <a href="#faq" className="transition-colors hover:text-[#059669]">
-              FAQ
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              onClick={() => triggerNavProgress()}
-              className="px-3.5 py-1.5 text-xs font-bold text-slate-700 transition-colors hover:text-[#059669]"
-            >
-              Masuk
-            </Link>
-            {/* Electric Lime Button with Dark Navy Accent */}
-            <Link
-              href="/register"
-              onClick={() => triggerNavProgress()}
-              className="group inline-flex items-center gap-1.5 rounded-full bg-[#BEF264] pl-4 pr-1.5 py-1.5 text-xs font-extrabold text-[#0F172A] shadow-sm transition-all hover:bg-[#a3e635] hover:scale-[1.02]"
-            >
-              <span>Mulai Gratis</span>
-              <div className="flex size-5 items-center justify-center rounded-full bg-[#0F172A] transition-transform group-hover:translate-x-0.5">
-                <ArrowUpRight className="size-3 text-[#BEF264]" />
-              </div>
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* 1. High-End Floating Glass Header with Interactive Burger Menu */}
+      <LandingNavbar />
 
       {/* 2. Hero Section */}
       <section id="overview" className="relative z-10 overflow-hidden pt-12 pb-20 sm:pt-20 sm:pb-28">
@@ -455,40 +409,40 @@ Impact: Prompt generator will restrict all database queries to Drizzle schemas.`
             {/* Column 2: Bisavibecoding (Us) — Highly Branded Bento Card */}
             <Reveal delay={2} className="lg:col-span-7 flex">
               <div className="rounded-[2rem] p-1.5 bg-linear-to-br from-[#BEF264] via-emerald-400 to-[#15803D] shadow-xl w-full">
-                <div className="rounded-[calc(2rem-0.375rem)] bg-[#0F172A] p-8 border border-slate-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden">
-                  <div className="absolute top-6 right-6">
-                    <span className="rounded-full bg-[#BEF264] px-3.5 py-1 text-xs font-extrabold text-[#0F172A] shadow-xs uppercase tracking-wider">
-                      Rekomendasi Vibe Coder
-                    </span>
-                  </div>
-
+                <div className="rounded-[calc(2rem-0.375rem)] bg-[#0F172A] p-5 sm:p-8 border border-slate-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden">
                   <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <Logo markClassName="size-8 rounded-xl" wordmarkClassName="text-xl font-extrabold text-white" gradientId="bvc-cmp-brand" />
+                    <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3">
+                        <Logo markClassName="size-7 sm:size-8 rounded-xl" wordmarkClassName="text-lg sm:text-xl font-extrabold text-white" gradientId="bvc-cmp-brand" />
+                      </div>
+                      <span className="rounded-full bg-[#BEF264] px-3 sm:px-3.5 py-1 text-[10px] sm:text-xs font-extrabold text-[#0F172A] shadow-xs uppercase tracking-wider">
+                        Rekomendasi Vibe Coder
+                      </span>
                     </div>
-                    <p className="text-xs text-slate-300 mt-1">Lapisan perencanaan terstruktur sebelum kode ditulis.</p>
-                    <hr className="my-6 border-slate-800" />
-                    <ul className="space-y-4 text-sm font-medium text-slate-200">
+
+                    <p className="text-xs text-slate-300">Lapisan perencanaan terstruktur sebelum kode ditulis.</p>
+                    <hr className="my-5 sm:my-6 border-slate-800" />
+                    <ul className="space-y-3.5 sm:space-y-4 text-xs sm:text-sm font-medium text-slate-200">
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="size-5 text-[#BEF264] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="size-4.5 sm:size-5 text-[#BEF264] shrink-0 mt-0.5" />
                         <span><strong>Intake Interaktif:</strong> Tanya jawab cerdas penyusun PRD</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="size-5 text-[#BEF264] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="size-4.5 sm:size-5 text-[#BEF264] shrink-0 mt-0.5" />
                         <span><strong>PRD Versioning & Lock:</strong> Single source of truth teruji</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="size-5 text-[#BEF264] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="size-4.5 sm:size-5 text-[#BEF264] shrink-0 mt-0.5" />
                         <span><strong>Atomic Task Prompts:</strong> 100% siap tempel ke Claude Code & Cursor</span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <CheckCircle2 className="size-5 text-[#BEF264] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="size-4.5 sm:size-5 text-[#BEF264] shrink-0 mt-0.5" />
                         <span><strong>Guardrails & Rules Validation:</strong> Bebas dari halusinasi kode</span>
                       </li>
                     </ul>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between text-xs font-semibold text-[#BEF264]">
+                  <div className="mt-6 sm:mt-8 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 text-xs font-semibold text-[#BEF264]">
                     <span>Hemat hingga 80% waktu refaktor</span>
                     <Link href="/register" className="inline-flex items-center gap-1 hover:underline font-bold">
                       Coba Sekarang <ArrowRight className="size-4 text-[#BEF264]" />

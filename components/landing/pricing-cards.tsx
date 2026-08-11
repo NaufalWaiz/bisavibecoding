@@ -36,7 +36,7 @@ export function PricingCards() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 items-stretch">
         {/* 0. FREE PLAN */}
         <div className="rounded-[2rem] p-1.5 bg-slate-200/50 border border-slate-200/80 shadow-xs hover:border-[#BEF264] transition-all flex flex-col justify-between">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-5 sm:p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
@@ -86,7 +86,7 @@ export function PricingCards() {
 
         {/* 1. STARTER PLAN */}
         <div className="rounded-[2rem] p-1.5 bg-slate-200/50 border border-slate-200/80 shadow-xs hover:border-[#BEF264] transition-all flex flex-col justify-between">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-5 sm:p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-lime-50 border border-lime-200 px-3 py-1 text-xs font-bold text-[#3F6212]">
@@ -208,7 +208,7 @@ export function PricingCards() {
 
         {/* 3. ULTRA PLAN */}
         <div className="rounded-[2rem] p-1.5 bg-slate-200/50 border border-slate-200/80 shadow-xs hover:border-[#BEF264] transition-all flex flex-col justify-between">
-          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
+          <div className="rounded-[calc(2rem-0.375rem)] bg-white p-5 sm:p-6 border border-slate-100 shadow-sm flex flex-col justify-between h-full">
             <div>
               <div className="flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-bold text-[#059669]">

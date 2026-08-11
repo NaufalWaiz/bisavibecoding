@@ -96,7 +96,7 @@ export function IntakeChat({
     node.style.height = `${Math.min(node.scrollHeight, 200)}px`;
   }, [input]);
 
-  function useStarter(prompt: string) {
+  function applyStarter(prompt: string) {
     setInput(prompt);
     textareaRef.current?.focus();
   }
@@ -249,7 +249,7 @@ export function IntakeChat({
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => useStarter(projectDescription)}
+                      onClick={() => applyStarter(projectDescription)}
                       className="h-8 px-3 text-tiny font-semibold gap-1.5 text-foreground hover:text-brand-stronger border-border/80 hover:border-brand-soft-border bg-surface cursor-pointer shadow-warm-xs"
                     >
                       <PenTool className="size-3.5 text-brand-strong" />
@@ -269,7 +269,7 @@ export function IntakeChat({
                 </div>
               ) : null}
 
-              <StarterPanel onPick={useStarter} />
+              <StarterPanel onPick={applyStarter} />
             </div>
           ) : null}
 

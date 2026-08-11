@@ -21,8 +21,8 @@ export default async function AppLayout({
     <div className="flex min-h-screen flex-1 flex-col bg-warm-canvas">
       {/* Top Navbar */}
       <header className="surface-glass sticky top-0 z-40 border-b border-border/60 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-content items-center justify-between gap-4 px-4 sm:px-6">
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex h-14 w-full max-w-content items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
             <Link
               href="/projects"
               className="group flex items-center gap-2.5 transition-warm focus-visible:outline-none"
@@ -30,7 +30,7 @@ export default async function AppLayout({
             >
               <Logo
                 markClassName="rounded-lg transition-warm group-hover:scale-105"
-                wordmarkClassName="text-h3 font-heading"
+                wordmarkClassName="text-[#0F172A] font-extrabold text-sm sm:text-h3 font-heading"
                 gradientId="bvc-app-hdr"
               />
             </Link>
@@ -44,22 +44,23 @@ export default async function AppLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Subscription Link */}
             <Link
               href="/subscription"
-              className="inline-flex items-center gap-1.5 rounded-full border border-brand-soft-border bg-brand-soft/80 px-3 py-1 text-tiny font-bold text-brand-stronger shadow-warm-xs transition-warm hover:bg-brand-soft hover:shadow-warm-sm hover:scale-105"
+              className="inline-flex items-center gap-1.5 rounded-full border border-brand-soft-border bg-brand-soft/80 px-2.5 sm:px-3 py-1 text-tiny font-bold text-brand-stronger shadow-warm-xs transition-warm hover:bg-brand-soft hover:shadow-warm-sm hover:scale-105"
             >
               <CreditCard className="size-3.5 text-brand-strong" />
-              <span>Berlangganan</span>
+              <span className="hidden sm:inline">Berlangganan</span>
+              <span className="sm:hidden">Pro</span>
             </Link>
 
             {/* User Profile Pill */}
-            <div className="flex items-center gap-2.5 rounded-full border border-border/90 bg-card px-2.5 py-1 text-tiny text-foreground shadow-warm-xs transition-warm hover:border-brand-strong/30 hover:shadow-warm-sm">
+            <div className="flex items-center gap-2 rounded-full border border-border/90 bg-card px-2 py-1 text-tiny text-foreground shadow-warm-xs transition-warm hover:border-brand-strong/30 hover:shadow-warm-sm">
               <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-brand-soft border border-brand-soft-border font-mono text-[11px] font-bold text-brand-stronger leading-none shadow-warm-xs">
                 {userInitial}
               </span>
-              <span className="hidden max-w-[200px] truncate text-tiny font-semibold text-foreground tracking-tight sm:inline pr-1">
+              <span className="hidden max-w-[160px] truncate text-tiny font-semibold text-foreground tracking-tight sm:inline pr-1">
                 {user.email}
               </span>
             </div>

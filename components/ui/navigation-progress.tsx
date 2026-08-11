@@ -78,22 +78,22 @@ function NavigationProgressContent() {
   if (!loading && progress === 0) return null;
 
   return (
-    <div className="pointer-events-none fixed top-0 left-0 right-0 z-50">
+    <div className="pointer-events-none fixed top-0 left-0 right-0 z-[99999]">
       {/* Top Thin Glowing Progress Bar */}
       <div
-        className="h-1 bg-gradient-to-r from-brand via-[#a3e635] to-emerald-500 transition-all duration-300 ease-out shadow-[0_0_12px_rgba(190,242,100,0.8)]"
+        className="h-1 bg-linear-to-r from-[#BEF264] via-emerald-400 to-[#a3e635] transition-all duration-300 ease-out shadow-[0_0_16px_rgba(190,242,100,0.9)]"
         style={{ width: `${progress}%` }}
       />
-      {/* Indicator Badge Ringkas di Pojok Atas */}
+      {/* Floating Indicator Badge Below Navbar */}
       <AnimatePresence>
         {loading && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute top-2.5 right-4 flex items-center gap-2 rounded-full border border-brand-soft-border bg-[#0F172A] px-3.5 py-1.5 text-[11px] font-semibold text-white shadow-warm-md"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            className="fixed top-16 right-4 sm:top-20 sm:right-6 z-[99999] flex items-center gap-2.5 rounded-full border border-slate-700 bg-[#0F172A]/95 px-4 py-2 text-xs font-bold text-white shadow-2xl backdrop-blur-xl ring-1 ring-emerald-500/20"
           >
-            <span className="size-2 rounded-full bg-brand animate-ping" />
+            <span className="size-2 rounded-full bg-[#BEF264] animate-ping" />
             <span>Memuat halaman…</span>
           </motion.div>
         )}

@@ -64,23 +64,23 @@ Implementasikan fitur pembuatan invoice baru dan ekspor berkas PDF.
       <div className="pointer-events-none absolute -right-24 -top-24 size-96 rounded-full bg-linear-to-br from-[#BEF264]/15 via-emerald-500/8 to-transparent blur-3xl transition-transform duration-1000 group-hover:scale-125" />
 
       {/* Top App Header Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 bg-slate-50/80 px-6 py-4 text-xs text-slate-500">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 border-b border-slate-100 bg-slate-50/80 px-4 sm:px-6 py-3 sm:py-4 text-xs text-slate-500">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex gap-1.5">
             <span className="size-3 rounded-full bg-[#ff5f56] transition-transform hover:scale-125" />
             <span className="size-3 rounded-full bg-[#ffbd2e] transition-transform hover:scale-125" />
             <span className="size-3 rounded-full bg-[#27c93f] transition-transform hover:scale-125" />
           </div>
-          <span className="font-mono text-xs font-bold text-[#0F172A]">
+          <span className="font-mono text-[11px] sm:text-xs font-bold text-[#0F172A] truncate max-w-[200px] sm:max-w-none">
             bisavibecoding.app / SaaS Invoicing
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D9F99D] bg-[#F7FEE7] px-3 py-0.5 text-[11px] font-extrabold text-[#3F6212] shadow-xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D9F99D] bg-[#F7FEE7] px-2.5 py-0.5 text-[10px] sm:text-[11px] font-extrabold text-[#3F6212] shadow-xs">
             <Lock className="size-3 text-[#3F6212]" />
             PRD v1 Locked
           </span>
         </div>
 
-        <div className="flex items-center gap-3 font-semibold">
+        <div className="hidden sm:flex items-center gap-3 font-semibold">
           <span className="inline-flex items-center gap-1.5 text-[#0F172A]">
             <Calendar className="size-3.5 text-slate-400" />
             24 Juli 2026
@@ -138,7 +138,30 @@ Implementasikan fitur pembuatan invoice baru dan ekspor berkas PDF.
         </aside>
 
         {/* Right Main Panel */}
-        <main className="p-6">
+        <main className="p-4 sm:p-6">
+          {/* Mobile Tab Selector (Visible on screens < lg) */}
+          <div className="mb-5 flex items-center gap-1.5 overflow-x-auto rounded-2xl bg-slate-100/80 p-1.5 lg:hidden no-scrollbar">
+            {[
+              { id: "overview", label: "Ringkasan", icon: BarChart3 },
+              { id: "prd", label: "PRD Editor", icon: FileText },
+              { id: "tasks", label: "Task Ready", icon: Zap },
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveTab(id as "overview" | "prd" | "tasks")}
+                className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold transition-all cursor-pointer ${
+                  activeTab === id
+                    ? "bg-[#0F172A] text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                }`}
+              >
+                <Icon className={`size-3.5 ${activeTab === id ? "text-[#BEF264]" : "text-slate-400"}`} />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+
           {activeTab === "overview" && (
             <div className="flex flex-col gap-6 animate-scale-in">
               {/* Top Stats Cards */}

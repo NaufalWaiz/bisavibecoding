@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, Lock, ChevronRight } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buildPipeline, type PipelineInput } from "@/lib/project-progress";
 
@@ -19,11 +19,11 @@ export function WorkflowPipelineNav({
     <nav
       aria-label="Alur pengerjaan"
       className={cn(
-        "rounded-2xl border border-border/80 bg-surface-sunken/60 p-1.5 shadow-warm-xs backdrop-blur-sm",
+        "rounded-2xl border border-border/80 bg-surface-sunken/60 p-1.5 shadow-warm-xs backdrop-blur-sm overflow-x-auto no-scrollbar",
         className,
       )}
     >
-      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+      <ol className="grid grid-cols-2 gap-1.5 sm:gap-2 sm:grid-cols-4 min-w-[280px]">
         {steps.map((step) => {
           const href = step.segment ? `${base}/${step.segment}` : base;
           const active = step.segment
@@ -38,18 +38,21 @@ export function WorkflowPipelineNav({
               <Link
                 href={href}
                 aria-current={active ? "step" : undefined}
+                aria-disabled={blocked}
+                tabIndex={blocked ? -1 : undefined}
+                onClick={(e) => {
+                  if (blocked) e.preventDefault();
+                }}
                 title={step.blockedReason ?? `${step.label}: ${step.detail}`}
                 className={cn(
-                  "group relative flex items-center gap-3 rounded-xl border px-3.5 py-2.5 transition-all duration-200",
+                  "group relative flex items-center gap-2 sm:gap-3 rounded-xl bg-card px-2.5 sm:px-3.5 py-2 sm:py-2.5 transition-all duration-200",
                   active
-                    ? "border-brand-strong/40 bg-card text-brand-stronger shadow-warm-sm ring-1 ring-brand-strong/20 font-bold"
-                    : isDone
-                      ? "border-sage-soft-border bg-sage-soft/60 text-sage-text hover:bg-sage-soft hover:border-sage-strong/40"
+                    ? "border-2 border-brand-strong ring-2 ring-brand-strong/20 shadow-warm-sm font-bold"
+                    : blocked
+                      ? "border border-border/40 bg-surface-sunken/40 text-muted-foreground/60 cursor-not-allowed opacity-60"
                       : isWarn
-                        ? "border-amber-soft-border bg-amber-soft/60 text-amber-text hover:bg-amber-soft"
-                        : blocked
-                          ? "border-border/40 bg-surface-sunken/40 text-muted-foreground/60 cursor-not-allowed"
-                          : "border-border/80 bg-card/80 text-foreground hover:bg-card hover:border-border-strong hover:shadow-warm-xs",
+                        ? "border border-amber-soft-border hover:bg-surface-raised hover:border-amber/50 hover:shadow-warm-xs"
+                        : "border border-border/80 hover:bg-surface-raised hover:border-border-strong hover:shadow-warm-xs",
                 )}
               >
                 {/* Step Badge Indicator */}
@@ -57,19 +60,17 @@ export function WorkflowPipelineNav({
                   aria-hidden
                   className={cn(
                     "flex size-6 shrink-0 items-center justify-center rounded-lg text-tiny font-bold font-mono transition-transform duration-200 group-hover:scale-105",
-                    active
+                    isDone
                       ? "bg-brand-strong text-white shadow-warm-xs"
-                      : isDone
-                        ? "bg-sage-strong text-white shadow-warm-xs"
-                        : isWarn
-                          ? "bg-amber text-white shadow-warm-xs"
-                          : "bg-surface-sunken text-muted-foreground border border-border/60",
+                      : isWarn
+                        ? "bg-amber text-white shadow-warm-xs"
+                        : "bg-surface-sunken text-muted-foreground border border-border/60",
                   )}
                 >
                   {isDone ? (
                     <Check className="size-3.5 stroke-[3]" />
                   ) : blocked ? (
-                    <Lock className="size-3" />
+                    <Lock className="size-3 text-muted-foreground/70" />
                   ) : (
                     step.num
                   )}
@@ -79,19 +80,26 @@ export function WorkflowPipelineNav({
                 <span className="flex min-w-0 flex-1 flex-col leading-tight">
                   <span
                     className={cn(
-                      "truncate text-small font-semibold tracking-tight",
+                      "truncate text-small tracking-tight transition-colors",
                       active
                         ? "text-brand-stronger font-bold"
-                        : isDone
-                          ? "text-sage-text"
-                          : blocked
-                            ? "text-muted-foreground/60"
-                            : "text-foreground",
+                        : blocked
+                          ? "text-muted-foreground/70 font-medium"
+                          : "text-foreground font-semibold group-hover:text-brand-stronger",
                     )}
                   >
                     {step.label}
                   </span>
-                  <span className="truncate text-[11px] text-muted-foreground/80 mt-0.5 font-normal">
+                  <span
+                    className={cn(
+                      "truncate text-[11px] mt-0.5 font-normal transition-colors",
+                      active
+                        ? "text-brand-strong/90 font-semibold"
+                        : isWarn
+                          ? "text-amber-text font-medium"
+                          : "text-muted-foreground",
+                    )}
+                  >
                     {step.blockedReason ?? step.detail}
                   </span>
                 </span>
